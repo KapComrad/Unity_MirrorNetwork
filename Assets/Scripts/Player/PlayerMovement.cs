@@ -80,7 +80,6 @@ public class PlayerMovement : NetworkBehaviour
             _rigidbody.AddForce(new Vector3(_horizontalInput * _jerkRange, _rigidbody.velocity.y, _verticalInput * _jerkRange));
 
             _jerkTimeCoroutine = StartCoroutine(JerkTime());
-            StopCoroutine(_jerkTimeCoroutine);
         }
 
     }
