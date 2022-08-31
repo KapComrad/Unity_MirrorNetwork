@@ -19,11 +19,11 @@ public class PlayerTouch : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        PlayerNetwork playerNetwork = other.GetComponentInParent<PlayerNetwork>();
-
-        if (other.CompareTag("Player") && _playerMovement._jerking && playerNetwork.CanTouchThis)
-        {  
-            OnTouchedRpc?.Invoke(playerNetwork);
+        if (other.CompareTag("Player"))
+        {
+            PlayerNetwork playerNetwork = other.GetComponentInParent<PlayerNetwork>();
+            if (_playerMovement._jerking && playerNetwork.CanTouchThis)
+                OnTouchedRpc?.Invoke(playerNetwork);
         }
     }
 

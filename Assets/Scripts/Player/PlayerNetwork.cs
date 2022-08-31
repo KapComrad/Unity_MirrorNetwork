@@ -30,12 +30,18 @@ public class PlayerNetwork : NetworkBehaviour
 
     private void PlayerTouchRpc(PlayerNetwork playerNetwork)
     {
-        playerNetwork.GetComponentInParent<PlayerNetwork>().ChangeColor();
+        playerNetwork.ChangeColor();
     }
 
+    [Command(requiresAuthority = false)]
     public void ChangeColor()
     {
-        
+        ColorChanger();
+    }
+
+    [ClientRpc]
+    public void ColorChanger()
+    {
         if (CanTouchThis)
             StartCoroutine(Timer());
     }
