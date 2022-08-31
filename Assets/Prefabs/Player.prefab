@@ -191,6 +191,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   _speed: 5
+  canMove: 1
   _jerkRange: 500
   _jerking: 0
 --- !u!54 &738690793619962125
@@ -257,3 +258,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
+  CanTouchThis: 1

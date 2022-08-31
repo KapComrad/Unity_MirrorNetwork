@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using Mirror;
 
@@ -9,6 +10,9 @@ public class PlayerNetwork : NetworkBehaviour
     private MeshRenderer _renderer;
 
     public bool CanTouchThis = true;
+
+    public delegate void OnTouchedDelegate(int argument);
+    public static event OnTouchedDelegate OnTouched;
 
     private void OnEnable()
     {
@@ -24,14 +28,11 @@ public class PlayerNetwork : NetworkBehaviour
         _renderer = GetComponentInParent<MeshRenderer>();
     }
 
-    [ClientRpc]
     private void PlayerTouchRpc(PlayerNetwork playerNetwork)
     {
         playerNetwork.GetComponentInParent<PlayerNetwork>().ChangeColor();
     }
 
-
-    [ClientRpc]
     public void ChangeColor()
     {
         
@@ -45,6 +46,7 @@ public class PlayerNetwork : NetworkBehaviour
         _color = Color.red;
         _renderer.material.color = _color;
         CanTouchThis = false;
+        OnTouched?.Invoke(1);
         yield return new WaitForSeconds(3f);
         _color = Color.white;
         _renderer.material.color = _color;

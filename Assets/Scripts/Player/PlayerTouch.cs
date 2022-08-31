@@ -8,9 +8,6 @@ public class PlayerTouch : MonoBehaviour
     private PlayerMovement _playerMovement;
     private PlayerNetwork _playerNetwork;
 
-    public delegate void OnTouchedDelegate(int argument);
-    public static event OnTouchedDelegate OnTouched;
-
     public delegate void OnTouchedRpcDelegate(PlayerNetwork playerNetwork);
     public static event OnTouchedRpcDelegate OnTouchedRpc;
 
@@ -27,7 +24,6 @@ public class PlayerTouch : MonoBehaviour
         if (other.CompareTag("Player") && _playerMovement._jerking && playerNetwork.CanTouchThis)
         {  
             OnTouchedRpc?.Invoke(playerNetwork);
-            OnTouched?.Invoke(1);
         }
     }
 

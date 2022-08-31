@@ -1,50 +1,37 @@
 using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using Mirror;
 
-public class EventBus : NetworkBehaviour
+public class EventBus : NetworkManager
 {
-    [SerializeField] private TextMeshProUGUI _textMeshPro;
+    public delegate void OnPlayerConnected(string name, int idNumber);
+    public static event OnPlayerConnected OnConnected;
 
-    [SyncVar] private List<string> _playerNames = new List<string>();
+    public delegate void OnPlayerDisconnected(int idNumber);
+    public static event OnPlayerDisconnected OnDisconnected;
 
-    
-    private void OnEnable()
+    public delegate void OnServerDisconnected();
+    public static event OnServerDisconnected OnServerDisconnectedEvent;
+
+    [System.Obsolete]
+    public override void OnClientConnect(NetworkConnection conn)
     {
-        PlayerTouch.OnTouched += OnPlayerScoreChanged;
-       //NetworkManager.OnPlayerConnected += OnPlayerConnectedTextChanged;
-        NetworkManager.OnPlayerConnected += OnPlayerConnectedToServer;
+        Debug.Log($"Player {conn.connectionId} connected ");
+
+        OnConnected?.Invoke("Player", conn.connectionId);
     }
 
-    private void OnDisable()
+    [System.Obsolete]
+    public override void OnClientDisconnect(NetworkConnection conn)
     {
-        PlayerTouch.OnTouched -= OnPlayerScoreChanged;
-        //NetworkManager.OnPlayerConnected -= OnPlayerConnectedTextChanged;
-        NetworkManager.OnPlayerConnected -= OnPlayerConnectedToServer;
+        OnDisconnected?.Invoke(conn.connectionId);
     }
 
-    public void OnPlayerScoreChanged(int score)
+    public override void OnStopServer()
     {
-        _textMeshPro.text = score.ToString();
-        Debug.Log("EVENT BUS : TOUCHED PLAYER");
+        base.OnStopServer();
+        OnServerDisconnectedEvent?.Invoke();
     }
-
-    public void OnPlayerConnectedToServer(string name)
-    {
-        _playerNames.Add(name);
-        OnPlayerConnectedTextChanged();
-    }
-
-    [ClientRpc]
-    public void OnPlayerConnectedTextChanged()
-    {
-        Debug.Log("Client side active");
-        for (int i = 0; i < _playerNames.Count; i++)
-        {
-            _textMeshPro.text += _playerNames[i];
-            Debug.Log("Player connected with name: " + _playerNames);
-        }
-    }
-
 }
