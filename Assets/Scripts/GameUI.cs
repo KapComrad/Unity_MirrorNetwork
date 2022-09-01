@@ -11,6 +11,7 @@ public class GameUI : NetworkBehaviour
     private void OnEnable()
     {
         EventBus.OnConnected += OnPlayerConnectedToServer;
+        PlayerNetwork.PlayerConnected += OnPlayerConnectedTextChange;
         EventBus.OnDisconnected += OnPlayerDisconnectedTextChange;
         EventBus.OnServerDisconnectedEvent += OnServerDisconnectedTextChange;
     }
@@ -18,29 +19,30 @@ public class GameUI : NetworkBehaviour
     private void OnDisable()
     {
         EventBus.OnConnected -= OnPlayerConnectedToServer;
+        PlayerNetwork.PlayerConnected -= OnPlayerConnectedTextChange;
         EventBus.OnDisconnected -= OnPlayerDisconnectedTextChange;
         EventBus.OnServerDisconnectedEvent -= OnServerDisconnectedTextChange;
     }
 
+    [Server]
     public void OnPlayerConnectedToServer(string name, int idNumber)
     {
         if (_playerNames.ContainsKey(idNumber)) return;
         Debug.Log("Player not in a Dictionary!");
         _playerNames.Add(idNumber, name);
-        OnPlayerConnectedTextChange();
     }
 
-    [ClientRpc]
+    [Command]
     public void OnPlayerScoreChanged(int score)
     {
         _textMeshPro.text = score.ToString();
         Debug.Log("EVENT BUS : TOUCHED PLAYER");
     }
 
-    [ClientRpc]
+    [Command(requiresAuthority = false)]
     public void OnPlayerConnectedTextChange()
     {
-        Debug.Log("Client side active");
+        Debug.Log("Server side active");
         for (int i = 0; i < _playerNames.Count; i++)
         {
             _textMeshPro.text += _playerNames[i].ToString() + i.ToString();
@@ -48,11 +50,17 @@ public class GameUI : NetworkBehaviour
         }
     }
 
-    [ClientRpc]
+
+    [Server]
     public void OnPlayerDisconnectedTextChange(int idNumber)
     {
         _playerNames.Remove(idNumber);
-        OnPlayerConnectedTextChange();
+        Debug.Log("Server side active");
+        for (int i = 0; i < _playerNames.Count; i++)
+        {
+            _textMeshPro.text += _playerNames[i].ToString() + i.ToString();
+            Debug.Log("Player connected with name: " + _playerNames);
+        }
     }
 
     [ClientRpc]
@@ -62,6 +70,7 @@ public class GameUI : NetworkBehaviour
         _textMeshPro.text = "";
         Debug.Log("Server disconnected!");
     }
+
 
 
 }

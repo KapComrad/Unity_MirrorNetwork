@@ -14,6 +14,14 @@ public class PlayerNetwork : NetworkBehaviour
     public delegate void OnTouchedDelegate(int argument);
     public static event OnTouchedDelegate OnTouched;
 
+    public delegate void OnPlayersConnected();
+    public static event OnPlayersConnected PlayerConnected;
+
+    private void Start()
+    {
+        PlayerConnected?.Invoke();
+    }
+
     private void OnEnable()
     {
         PlayerTouch.OnTouchedRpc += PlayerTouchRpc;
@@ -58,6 +66,6 @@ public class PlayerNetwork : NetworkBehaviour
         _renderer.material.color = _color;
         CanTouchThis = true;
         Debug.Log("Touch Ended");
-
     }
+
 }

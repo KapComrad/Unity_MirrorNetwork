@@ -31,6 +31,7 @@ public class PlayerMovement : NetworkBehaviour
         _horizontalInput = Input.GetAxis("Horizontal");
         _verticalInput = Input.GetAxis("Vertical");
         _mouseButtonClicked = Input.GetMouseButtonDown(0);
+
     }
 
     private void FixedUpdate()
@@ -40,6 +41,12 @@ public class PlayerMovement : NetworkBehaviour
         if (canMove)
             Movement();
         Jerk();
+
+        if (transform.position.y < -50)
+        {
+            OutOfBounds();
+        }
+
     }
 
     private void Movement()
@@ -65,5 +72,17 @@ public class PlayerMovement : NetworkBehaviour
         yield return new WaitForSeconds(_jerkTime);
         canMove = true;
         _jerking = false;
+    }
+
+    [Command]
+    private void OutOfBounds()
+    {
+        TpToSpawn(5,5,5);
+    }
+
+    [TargetRpc]
+    private void TpToSpawn(float newX , float newY , float newZ)
+    {
+        transform.position = new Vector3(newX, newY, newZ);
     }
 }
